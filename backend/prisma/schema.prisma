@@ -6,10 +6,34 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Student {
+  id          String       @id @default(uuid())
+  firstName   String
+  lastName    String
+  email       String       @unique
+  password    String
+  simulations Simulation[]
+
+  @@map("students")
+}
+
+model Simulation {
+  id                   String   @id @default(uuid())
+  studentId            String
+  totalAmount          Float
+  numberOfInstallments Int
+  monthlyInterestRate  Float
+  monthlyInstallment   Float
+  createdAt            DateTime @default(now())
+
+  student Student @relation(fields: [studentId], references: [id])
+
+  @@map("simulations")
 }
