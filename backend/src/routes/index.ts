@@ -39,4 +39,26 @@ router.get('/me', authMiddleware, getProfile);
 router.put('/me', authMiddleware, validateSchema(updateStudentSchema), updateProfile);
 
 
+// ========== ROTAS DE SIMULAÇÕES ==========
+
+/**
+ * POST /api/simulations - Cria uma nova simulação
+ */
+router.post('/simulations', authMiddleware, validateSchema(financingSimulationSchema), createSimulation);
+
+/**
+ * GET /api/simulations - Lista todas as simulações do estudante
+ */
+router.get('/simulations', authMiddleware, listSimulation);
+
+/**
+ * GET /api/simulations/:id - Busca uma simulação específica
+ */
+// router.get('/simulations/:id', authMiddleware, getByIdSimulation);
+
+/**
+ * DELETE /api/simulations/:id - Deleta uma simulação
+ */
+// router.delete('/simulations/:id', authMiddleware, deleteSimulation);
+
 export { router };

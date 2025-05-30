@@ -40,9 +40,25 @@ export const updateStudentSchema = z.object({
     .optional(),
 })
 
+export const financingSimulationSchema = z.object({
+  totalAmount: z.number()
+    .positive('Valor total deve ser positivo')
+    .min(5000, 'Valor mínimo é R$5.000')
+    .max(50000, 'Valor máximo é R$ 50.000'),
+
+  numberOfInstallments: z.number()
+    .int('Quantidade de parcelas deve ser um número inteiro')
+    .min(6, 'Mínimo de 6 parcela')
+    .max(36, 'Máximo de 36 parcelas'),
+  monthlyInterestRate: z.number()
+    .min(0, 'Taxa de juros não pode ser negativa')
+    .max(0.15, 'Taxa de juros mensal máxima é 15%'),
+})
+
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type UpdateStudentInput = z.infer<typeof updateStudentSchema>;
+export type SimulationInput = z.infer<typeof financingSimulationSchema>;
 
 export const validateSchema = (schema: z.ZodSchema) => {
   return (req: any, res: any, next: any) => {

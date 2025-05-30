@@ -52,7 +52,9 @@ app.get('/', (req, res) => {
       register: 'POST /api/register',
       login: 'POST /api/login',
       profile: 'GET /api/me',
-      updateProfile: 'PUT /api/me'
+      updateProfile: 'PUT /api/me',
+      createSimulation: 'POST /api/simulations',
+      listSimulations: 'GET /api/simulations'
     }
   });
 });
