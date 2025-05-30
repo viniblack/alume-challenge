@@ -14,17 +14,20 @@ datasource db {
 }
 
 model Student {
-  id          String       @id @default(uuid())
-  firstName   String
-  lastName    String
-  email       String       @unique
-  password    String
-  simulations Simulation[]
+  id        String   @id @default(uuid())
+  firstName String
+  lastName  String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  simulations FinancingSimulation[]
 
   @@map("students")
 }
 
-model Simulation {
+model FinancingSimulation {
   id                   String   @id @default(uuid())
   studentId            String
   totalAmount          Float
@@ -33,7 +36,7 @@ model Simulation {
   monthlyInstallment   Float
   createdAt            DateTime @default(now())
 
-  student Student @relation(fields: [studentId], references: [id])
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@map("simulations")
 }
