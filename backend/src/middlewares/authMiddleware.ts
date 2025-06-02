@@ -1,8 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import {
-  verifyToken,
-  extractTokenFromHeader
-} from '../services/AuthService';
+import { verifyToken } from '../services/AuthService';
 
 declare global {
   namespace Express {
@@ -17,8 +14,7 @@ declare global {
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction): void => {
   try {
-    const authHeader = req.headers.authorization;
-    const token = extractTokenFromHeader(authHeader);
+    const token = req.cookies.token;
 
     if (!token) {
       res.status(401).json({

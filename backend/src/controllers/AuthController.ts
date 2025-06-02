@@ -1,0 +1,158 @@
+import { Request, Response } from 'express';
+import { PrismaClient } from '@prisma/client';
+import {
+  hashPassword,
+  comparePassword,
+  generateToken
+} from '../services/AuthService';
+import {
+  RegisterInput,
+  LoginInput,
+} from '../schemas/validationSchemas';
+
+const prisma = new PrismaClient();
+
+/**
+ * POST /api/register - Registro de novo estudante
+ */
+export const registerStudent = async (req: Request, res: Response) => {
+  try {
+    const { firstName, lastName, email, password }: RegisterInput = req.body;
+
+    const existingStudent = await prisma.student.findUnique({
+      where: { email },
+    });
+
+    if (existingStudent) {
+      res.status(409).json({
+        error: 'Email já cadastrado',
+        message: 'Já existe um estudante cadastrado com este email'
+      });
+      return;
+    }
+
+    const hashPass = await hashPassword(password);
+
+    const student = await prisma.student.create({
+      data: {
+        firstName,
+        lastName,
+        email,
+        password: hashPass
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        createdAt: true,
+        updatedAt: true
+      }
+    });
+
+    const token = generateToken({
+      userId: student.id,
+      email: student.email
+    });
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 5 * 60 * 1000
+    });
+
+    res.status(201).json({
+      message: 'Estudante cadastrado com sucesso',
+      student
+    });
+
+  } catch (error) {
+    console.error('Erro ao registrar estudante:', error);
+    res.status(500).json({
+      error: 'Erro interno do servidor',
+      message: 'Não foi possível cadastrar o estudante'
+    });
+  }
+}
+
+const unauthorized = (res: Response) => {
+  res.status(401).json({
+    error: 'Credenciais inválidas',
+    message: 'Email ou senha incorretos'
+  });
+  return
+}
+
+/**
+  * POST /api/login - Autenticação
+  */
+export const login = async (req: Request, res: Response) => {
+  try {
+    const { email, password }: LoginInput = req.body
+
+    const student = await prisma.student.findUnique({
+      where: { email }
+    });
+
+    if (!student) {
+      return unauthorized(res);
+    }
+
+    const passwordIsValid = await comparePassword(password, student.password);
+    if (!passwordIsValid) {
+      return unauthorized(res);
+    }
+
+    const token = generateToken({
+      userId: student.id,
+      email: student.email
+    });
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 5 * 60 * 1000
+    });
+
+    res.status(200).json({
+      message: 'Login realizado com sucesso',
+      student: {
+        id: student.id,
+        firstName: student.firstName,
+        lastName: student.lastName,
+        email: student.email
+      },
+    })
+  } catch (error) {
+    console.error('Erro ao fazer login:', error);
+    res.status(500).json({
+      error: 'Erro interno do servidor',
+      message: 'Não foi possível realizar o login'
+    });
+  }
+}
+
+/**
+ * POST /api/logout - Logout estudante
+ */
+export const logout = (req: Request, res: Response) => {
+  try {
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
+
+    res.status(200).json({
+      message: 'Logout realizado com sucesso'
+    });
+  } catch (error) {
+    console.error('Erro ao fazer logout:', error);
+    res.status(500).json({
+      error: 'Erro interno do servidor',
+      message: 'Não foi possível realizar o logout'
+    });
+  }
+};

@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { router } from './routes';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 
@@ -35,6 +36,8 @@ app.use('/api/login', loginLimiter);
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+app.use(cookieParser());
 
 if (process.env.NODE_ENV !== 'production') {
   app.use((req, res, next) => {

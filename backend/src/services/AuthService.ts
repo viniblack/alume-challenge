@@ -27,7 +27,7 @@ export const comparePassword = async (password: string, hashedPassword: string):
  * Gera token JWT com expiração de 5 minutos
  */
 export const generateToken = (payload: { userId: string, email: string }): string => {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN })
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 }
 
 /**

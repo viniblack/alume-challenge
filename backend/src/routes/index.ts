@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { registerStudent, login, getProfile, updateProfile } from '../controllers/StudentController';
+import { getProfile, updateProfile } from '../controllers/StudentController';
+import { login, logout, registerStudent } from '../controllers/AuthController';
 import { createSimulation, listSimulation } from '../controllers/SimulationController';
 import { authMiddleware } from '../middlewares/authMiddleware';
 import {
@@ -27,6 +28,13 @@ router.post('/register', validateSchema(registerSchema), registerStudent);
  * POST /api/login - Autenticação
  */
 router.post('/login', validateSchema(loginSchema), login);
+
+/**
+ * POST /api/logout - Logout estudante
+ */
+router.post('/logout', logout);
+
+// ========== ROTAS DE ESTUDANTES ==========
 
 /**
  * GET /api/me - Retorna dados do estudante autenticado
