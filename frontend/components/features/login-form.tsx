@@ -63,12 +63,6 @@ export function LoginForm() {
             <div className="grid gap-3">
               <div className="flex items-center">
                 <Label htmlFor="password">Password</Label>
-                <a
-                  href="#"
-                  className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                >
-                  Forgot your password?
-                </a>
               </div>
               <Input id="password" type="password" {...register("password")} />
               {errors.password && <p className="text-red-500">{errors.password.message}</p>}
@@ -81,9 +75,9 @@ export function LoginForm() {
             </div>
           </div>
           <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
+            Ainda não tem conta?{" "}
             <a href="#" className="underline underline-offset-4">
-              Sign up
+              Cadastra-se
             </a>
           </div>
         </form>

@@ -1,20 +1,20 @@
 "use client"
 
-import { Card } from "./ui/card"
+import { Card } from "../ui/card"
 import { cn } from "@/lib/utils"
 import { Slider } from "@/components/ui/slider"
 import { useState, useMemo } from "react"
-import { Button } from "./ui/button"
-import { simulation } from "@/services/simulation"
+import { Button } from "../ui/button"
+import { createSimulation } from "@/services/simulation"
 import { toast } from "sonner"
 import { SimulationRequest } from "@/lib/http/simulationAPI"
+import { DialogTitle } from "@radix-ui/react-dialog"
 
 export default function SimulationCard() {
   const [amount, setAmount] = useState(5000)
   const [months, setMonths] = useState(6)
   const [loading, setLoading] = useState(false)
-
-  const interestRate = 0.0349 // 3.49% a.m
+  const [interestRate, setInterestRate] = useState(0.0349)
 
   // Função de cálculo de parcela com juros compostos (sistema PRICE)
   const monthlyPayment = useMemo(() => {
@@ -32,12 +32,9 @@ export default function SimulationCard() {
   const handleSubmit = async (data: SimulationRequest) => {
     try {
       setLoading(true)
-      console.log(data);
-
-      const res = await simulation(data)
-      console.log("Register success", res)
-
+      const res = await createSimulation(data)
       toast.success("Simulação criada com sucesso")
+      console.log("Register success", res)
     } catch (error) {
       console.error(error);
       toast.error("Erro ao enviar a simulação.")
@@ -47,7 +44,11 @@ export default function SimulationCard() {
   }
 
   return (
-    <Card className="w-[50vw] h-[50vh] max-w-4xl flex flex-col md:flex-row gap-6 py-0">
+    <Card className="w-[60vw] h-[70vh] max-w-4xl flex flex-col md:flex-row gap-6 py-0">
+
+      <DialogTitle className="sr-only">Criar simulação</DialogTitle>
+
+
       <div className="flex-1 space-y-6 p-7">
         {/* Valor desejado */}
         <div>
@@ -57,7 +58,7 @@ export default function SimulationCard() {
             defaultValue={[5000]}
             min={5000}
             max={50000}
-            step={100}
+            step={1000}
             value={[amount]}
             onValueChange={(val) => setAmount(val[0])}
             className={cn("w-full my-2")}
@@ -87,12 +88,33 @@ export default function SimulationCard() {
           </div>
         </div>
 
+        <div>
+          <h2 className="text-md font-bold text-center text-muted-foreground">Taxa de juros</h2>
+          <div className="text-4xl font-bold text-center my-4">{(interestRate * 100).toFixed(2)}%</div>
+          <Slider
+            defaultValue={[0.0349]}
+            min={0.01}
+            max={0.15}
+            step={0.0001}
+            value={[interestRate]}
+            onValueChange={(val) => setInterestRate(val[0])}
+            className={cn("w-full my-2")}
+          />
+          <div className="flex justify-between text-xs text-muted-foreground">
+            <span className="text-sm">1%</span>
+            <span className="text-sm">15%</span>
+          </div>
+        </div>
+
         {/* ✅ Botão de envio */}
-        <Button onClick={() => handleSubmit({
-          totalAmount: amount,
-          numberOfInstallments: months,
-          monthlyInterestRate: interestRate
-        })}
+        <Button
+          size="lg"
+          className="w-full"
+          onClick={() => handleSubmit({
+            totalAmount: amount,
+            numberOfInstallments: months,
+            monthlyInterestRate: interestRate
+          })}
           disabled={loading}
         >
           {loading ? "Enviando..." : "Enviar Simulação"}
@@ -100,9 +122,9 @@ export default function SimulationCard() {
       </div>
 
       <div className="flex-1 flex flex-col justify-between items-center bg-muted rounded-md p-7">
-        <div>
+        <div className="flex flex-col justify-center h-100 w-90">
           <h2 className="text-md font-bold text-center text-muted-foreground pb-3">Parcela mensal</h2>
-          <div className="text-4xl font-bold mt-2 pb-5">
+          <div className="text-4xl font-bold mt-2 pb-5 text-center">
             <span className="text-2xl">{months}x de</span> R$
             {monthlyPayment.toLocaleString("pt-BR", {
               minimumFractionDigits: 2,
