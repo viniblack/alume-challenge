@@ -8,6 +8,18 @@ export type RegisterStudentRequest = {
   confirmPassword: string;
 };
 
+export type StudentRequest = {
+  firstName: string;
+  lastName: string;
+  email: string;
+};
+
+export type ChangePasswordRequest = {
+  currentPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
+};
+
 export type LoginRequest = {
   email: string;
   password: string;
@@ -40,6 +52,14 @@ const authAPI = {
   logout: async () => {
     const res = await apiClient.post('/api/logout');
     return res.data
+  },
+  changePassword: async (payload: ChangePasswordRequest) => {
+    const res = await apiClient.patch('/api/change-password', payload)
+    return res.data
+  },
+  updateProfile: async (payload: StudentRequest): Promise<AuthResponse> => {
+    const res = await apiClient.put('/api/me', payload);
+    return res.data;
   }
 };
 

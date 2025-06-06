@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -17,6 +16,7 @@ import { authLogin } from "@/services/auth"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
+import Link from "next/link"
 
 export function LoginForm() {
   const { register, handleSubmit, formState: { errors } } = useForm<LoginSchema>({
@@ -30,15 +30,11 @@ export function LoginForm() {
     try {
       setLoading(true)
       const res = await authLogin(data)
-
       console.log("Login success", res)
-
-      toast.success("Login sucesso")
-
+      toast.success("Usuário logado com sucesso")
       router.push('/dashboard')
     } catch (err) {
       console.error("Login error", err)
-      toast.error("Erro ao cadastrar usuário")
     } finally {
       setLoading(false)
     }
@@ -47,10 +43,7 @@ export function LoginForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Login to your account</CardTitle>
-        <CardDescription>
-          Enter your email below to login to your account
-        </CardDescription>
+        <CardTitle>Login</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} >
@@ -76,9 +69,12 @@ export function LoginForm() {
           </div>
           <div className="mt-4 text-center text-sm">
             Ainda não tem conta?{" "}
-            <a href="#" className="underline underline-offset-4">
-              Cadastra-se
-            </a>
+            <Link
+              href="/register"
+              className="underline underline-offset-4"
+            >
+              Cadastrar-se
+            </Link>
           </div>
         </form>
       </CardContent>

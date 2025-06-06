@@ -1,7 +1,7 @@
 "use client"
 import authAPI, { LoginRequest, RegisterStudentRequest } from "@/lib/http/authAPI";
 import { authLogin, authRegister } from "@/services/auth";
-import React, { useState, createContext, useContext, useCallback } from "react";
+import React, { useState, createContext, useContext, useCallback, useEffect } from "react";
 
 export type Student = {
   id: string;
@@ -36,6 +36,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    fetchCurrentStudent();
+  }, [fetchCurrentStudent]);
 
   const login = async (payload: LoginRequest) => {
     await authLogin(payload);

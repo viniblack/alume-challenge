@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 export function RegisterForm() {
   const { register, handleSubmit, formState: { errors } } = useForm<RegisterSchema>({
@@ -79,6 +80,15 @@ export function RegisterForm() {
           </Button>
         </form>
       </CardContent>
+      <div className="text-center text-sm">
+        Já possui cadastro?{" "}
+        <Link
+          href="/login"
+          className="underline underline-offset-4"
+        >
+          Clique aqui
+        </Link>
+      </div>
     </Card>
   )
 }
