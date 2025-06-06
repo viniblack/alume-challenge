@@ -1,5 +1,5 @@
 "use client"
-import PrivateRoute from "@/components/PrivateRoute";
+import RequireAuth from "@/components/RequireAuth";
 import SimulationCard from "@/components/features/simulation-card";
 import { useEffect, useState } from "react";
 import { DataTable } from "@/components/features/simulations/data-table";
@@ -25,7 +25,7 @@ export default function SimulationsPage() {
   }, [pageIndex, pageSize]);
 
   return (
-    <PrivateRoute>
+    <RequireAuth>
       <div className="w-full px-10 pt-5">
         <div className="flex justify-between">
           <h2 className="text-3xl font-bold mb-6">Histórico de Simulações</h2>
@@ -53,6 +53,6 @@ export default function SimulationsPage() {
           }}
         />
       </div>
-    </PrivateRoute>
+    </RequireAuth>
   );
 }

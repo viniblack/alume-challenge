@@ -58,6 +58,16 @@ const simulationAPI = {
   GetSimulations: async (page = 1): Promise<GetSimulationsResponse> => {
     const res = await apiClient.get<GetSimulationsResponse>(`/api/simulations?page=${page}`);
     return res.data;
+  },
+
+  GetSimulationsSummary: async () => {
+    const res = await apiClient.get('/api/simulations/summary');
+    return res.data;
+  },
+
+  GetSimulationsEvolution: async () => {
+    const res = await apiClient.get('/api/simulations/evolution');
+    return res.data;
   }
 };
 
