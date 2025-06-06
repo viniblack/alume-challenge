@@ -84,7 +84,7 @@ export const createSimulation = async (req: Request, res: Response) => {
 /**
  * GET /api/simulations - Lista todas as simulações do estudante
  */
-export const listSimulation = async (req: Request, res: Response) => {
+export const getSimulations = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.userId;
     const page = parseInt(req.query.page as string) || 1;
@@ -143,4 +143,77 @@ export const listSimulation = async (req: Request, res: Response) => {
       message: 'Não foi possível listar as simulações'
     });
   }
-} 
+}
+/**
+ * GET /api/simulations/summary - 
+ * Retorna um resumo das simulações do estudante
+ */
+export const getSimulationsSummary = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Usuário não autenticado' });
+    }
+
+    const simulations = await prisma.financingSimulation.findMany({
+      where: { studentId: userId }
+    });
+
+    const totalSimulations = simulations.length;
+    const totalFinanced = simulations.reduce((acc, sim) => acc + Number(sim.totalAmount), 0);
+    const totalInterests = simulations.reduce((acc, sim) => {
+      const interest = calculateTotalInterest(
+        Number(sim.totalAmount),
+        Number(sim.monthlyInstallment),
+        sim.numberOfInstallments
+      );
+      return acc + interest;
+    }, 0);
+
+    const avgInstallment = totalSimulations > 0
+      ? simulations.reduce((acc, sim) => acc + Number(sim.monthlyInstallment), 0) / totalSimulations
+      : 0;
+
+    res.status(200).json({
+      totalSimulations,
+      totalFinanced: Math.round(totalFinanced * 100) / 100,
+      totalInterests: Math.round(totalInterests * 100) / 100,
+      averageInstallment: Math.round(avgInstallment * 100) / 100
+    });
+  } catch (error) {
+    console.error('Erro ao obter resumo das simulações:', error);
+    res.status(500).json({
+      error: 'Erro interno do servidor',
+      message: 'Não foi possível obter o resumo'
+    });
+  }
+};
+
+
+/**
+ * GET /api/simulations/evolution - 
+ * Retorna a evolução das simulações ao longo do tempo
+ */
+export const getSimulationsEvolution = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.userId;
+
+    const simulations = await prisma.financingSimulation.findMany({
+      where: { studentId: userId },
+      select: {
+        createdAt: true,
+        totalAmount: true
+      },
+      orderBy: { createdAt: 'asc' }
+    });
+
+    res.status(200).json({ simulations });
+  } catch (error) {
+    console.error('Erro ao obter evolução das simulações:', error);
+    res.status(500).json({
+      error: 'Erro interno do servidor',
+      message: 'Não foi possível obter a evolução'
+    });
+  }
+};

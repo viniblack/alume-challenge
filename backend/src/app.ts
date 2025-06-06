@@ -55,9 +55,12 @@ app.get('/', (req, res) => {
       register: 'POST /api/register',
       login: 'POST /api/login',
       profile: 'GET /api/me',
+      changePassword: 'PATCH /change-password',
       updateProfile: 'PUT /api/me',
       createSimulation: 'POST /api/simulations',
-      listSimulations: 'GET /api/simulations'
+      getSimulations: 'GET /api/simulations',
+      getSimulationsSummary: 'GET /api/simulations/summary',
+      getSimulationsEvolution: 'GET /api/simulations/evolution',
     }
   });
 });

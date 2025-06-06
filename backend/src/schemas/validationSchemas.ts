@@ -15,7 +15,13 @@ export const registerSchema = z.object({
   password: z.string()
     .min(8, 'Senha deve ter pelo menos 8 caracteres')
     .max(22, 'Senha não pode exceder 22 caracteres'),
-})
+
+  confirmPassword: z.string()
+    .min(8, 'Confirmação da nova senha é obrigatória'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'As senhas não coincidem',
+  path: ['confirmNewPassword']
+});
 
 export const loginSchema = z.object({
   email: z.string()
@@ -55,10 +61,20 @@ export const financingSimulationSchema = z.object({
     .max(0.15, 'Taxa de juros mensal máxima é 15%'),
 })
 
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1, 'Senha atual é obrigatória'),
+  newPassword: z.string().min(8, 'Nova senha deve ter no mínimo 8 caracteres'),
+  confirmNewPassword: z.string().min(8, 'Confirmação da nova senha é obrigatória'),
+}).refine((data) => data.newPassword === data.confirmNewPassword, {
+  message: 'As senhas não coincidem',
+  path: ['confirmNewPassword']
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type UpdateStudentInput = z.infer<typeof updateStudentSchema>;
 export type SimulationInput = z.infer<typeof financingSimulationSchema>;
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
 
 export const validateSchema = (schema: z.ZodSchema) => {
   return (req: any, res: any, next: any) => {
@@ -75,7 +91,7 @@ export const validateSchema = (schema: z.ZodSchema) => {
           }))
         });
       }
-      
+
       return res.status(500).json({
         error: 'Erro interno do servidor'
       });

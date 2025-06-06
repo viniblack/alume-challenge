@@ -1,13 +1,6 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import {
-  hashPassword,
-  comparePassword,
-  generateToken
-} from '../services/AuthService';
-import {
-  RegisterInput,
-  LoginInput,
   UpdateStudentInput
 } from '../schemas/validationSchemas';
 

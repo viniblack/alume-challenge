@@ -8,7 +8,11 @@ import {
 import {
   RegisterInput,
   LoginInput,
+  ChangePasswordInput,
 } from '../schemas/validationSchemas';
+
+import { extractTokenFromHeader, verifyToken } from '../services/AuthService';
+import { z } from 'zod';
 
 const prisma = new PrismaClient();
 
@@ -153,6 +157,57 @@ export const logout = (req: Request, res: Response) => {
     res.status(500).json({
       error: 'Erro interno do servidor',
       message: 'Não foi possível realizar o logout'
+    });
+  }
+};
+
+/**
+ * PATCH /api/update-password - Atualizar senha do estudante
+ */
+export const changePassword = async (req: Request, res: Response) => {
+  try {
+    const { currentPassword, newPassword }: ChangePasswordInput = req.body;
+    const { user } = req as any; // vindo do middleware
+
+    console.log(user);
+
+    const student = await prisma.student.findUnique({
+      where: { id: user.userId }
+    });
+
+    if (!student) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+
+    const isValid = await comparePassword(currentPassword, student.password);
+    if (!isValid) {
+      return res.status(400).json({ error: 'Senha atual incorreta' });
+    }
+
+    const hashedNewPassword = await hashPassword(newPassword);
+
+    await prisma.student.update({
+      where: { id: student.id },
+      data: { password: hashedNewPassword }
+    });
+
+    return res.status(200).json({ message: 'Senha atualizada com sucesso' });
+  } catch (error) {
+    console.error('Erro ao atualizar senha:', error);
+
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        error: 'Dados inválidos',
+        details: error.errors.map(err => ({
+          field: err.path.join('.'),
+          message: err.message
+        }))
+      });
+    }
+
+    return res.status(500).json({
+      error: 'Erro interno do servidor',
+      message: 'Não foi possível atualizar a senha'
     });
   }
 };

@@ -18,8 +18,8 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction):
 
     if (!token) {
       res.status(401).json({
-        error: 'Token de acesso não fornecido',
-        message: 'É necessário estar autenticado para acessar este recurso'
+        error: 'Não autenticado',
+        message: 'Token não encontrado'
       });
       return;
     }

@@ -1,14 +1,15 @@
 import { Router } from 'express';
 import { getProfile, updateProfile } from '../controllers/StudentController';
-import { login, logout, registerStudent } from '../controllers/AuthController';
-import { createSimulation, listSimulation } from '../controllers/SimulationController';
+import { changePassword, login, logout, registerStudent } from '../controllers/AuthController';
+import { createSimulation, getSimulations, getSimulationsSummary, getSimulationsEvolution } from '../controllers/SimulationController';
 import { authMiddleware } from '../middlewares/authMiddleware';
 import {
   validateSchema,
   registerSchema,
   loginSchema,
   updateStudentSchema,
-  financingSimulationSchema
+  financingSimulationSchema,
+  changePasswordSchema
 } from '../schemas/validationSchemas';
 
 const router = Router();
@@ -46,6 +47,10 @@ router.get('/me', authMiddleware, getProfile);
  */
 router.put('/me', authMiddleware, validateSchema(updateStudentSchema), updateProfile);
 
+/**
+ * PATCH /api/update-password - Atualiza dados do estudante autenticado
+ */
+router.patch('/change-password', authMiddleware, validateSchema(changePasswordSchema), changePassword);
 
 // ========== ROTAS DE SIMULAÇÕES ==========
 
@@ -57,7 +62,19 @@ router.post('/simulations', authMiddleware, validateSchema(financingSimulationSc
 /**
  * GET /api/simulations - Lista todas as simulações do estudante
  */
-router.get('/simulations', authMiddleware, listSimulation);
+router.get('/simulations', authMiddleware, getSimulations);
+
+/**
+ * GET /api/simulations/summary - 
+ * Retorna um resumo das simulações do estudante
+ */
+router.get('/simulations/summary', authMiddleware, getSimulationsSummary)
+
+/**
+ * GET /api/simulations/evolution - 
+ * Retorna a evolução das simulações ao longo do tempo
+ */
+router.get('/simulations/evolution', authMiddleware, getSimulationsEvolution)
 
 /**
  * GET /api/simulations/:id - Busca uma simulação específica
