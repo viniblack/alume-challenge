@@ -1,36 +1,161 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Frontend do Alume Challenge
 
-## Getting Started
+Repositório do frontend para o desafio Alume Challenge.  
+Construído com Next.js, React, TypeScript e Tailwind CSS, este projeto oferece uma interface moderna, responsiva e acessível para interação com a API backend.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Sumário
+
+- [Frontend do Alume Challenge](#frontend-do-alume-challenge)
+  - [Sumário](#sumário)
+  - [Tecnologias Utilizadas](#tecnologias-utilizadas)
+  - [Estrutura do Projeto](#estrutura-do-projeto)
+  - [Configuração do Ambiente](#configuração-do-ambiente)
+    - [Pré-requisitos](#pré-requisitos)
+    - [Passos para configurar](#passos-para-configurar)
+  - [Instalação](#instalação)
+  - [Execução do Projeto](#execução-do-projeto)
+    - [Para produção](#para-produção)
+  - [Rotas Principais](#rotas-principais)
+  - [Variáveis de Ambiente](#variáveis-de-ambiente)
+
+---
+
+## Tecnologias Utilizadas
+
+- **Next.js**: Framework React com renderização SSR e SSG.  
+- **React**: Biblioteca para construção de interfaces.  
+- **TypeScript**: Tipagem estática para JavaScript.  
+- **Tailwind CSS**: Framework CSS utilitário para estilização rápida e customizável.  
+- **Axios**: Cliente HTTP para comunicação com a API.  
+- **React Hook Form**: Gerenciamento eficiente e validação de formulários.  
+- **Zod**: Validação de esquemas de dados.  
+- **Headless UI**: Componentes acessíveis e sem estilo pré-definido.  
+- **Heroicons**: Ícones SVG para a interface.  
+- **Recharts**: Biblioteca para gráficos e visualização de dados.  
+- **Date-fns**: Manipulação e formatação de datas.  
+- **Next Themes**: Controle de temas claro/escuro.
+
+---
+
+## Estrutura do Projeto
+
+Organização baseada nas convenções do Next.js, com separação clara entre páginas, componentes e serviços:
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+frontend/
+├── app/                    # Páginas, layouts e arquivos globais do Next.js
+│   ├── (pages)/            # Agrupamentos de rotas (ex: autenticação, dashboard)
+│   ├── favicon.ico         # Ícone do site
+│   ├── globals.css         # Estilos globais
+│   ├── layout.tsx          # Layout principal da aplicação
+│   └── page.tsx            # Página inicial
+├── components/             # Componentes React reutilizáveis
+├── contexts/               # Contextos React para gerenciamento global de estado
+├── lib/                    # Funções utilitárias e configurações diversas
+├── public/                 # Arquivos estáticos (imagens, fontes, etc.)
+├── services/               # Serviços para comunicação com a API backend
+│   ├── auth.ts             # Serviços relacionados à autenticação
+│   └── simulation.ts       # Serviços para simulações financeiras
+├── .gitignore              # Arquivos e pastas ignorados pelo Git
+├── README.md               # Documentação do projeto
+├── components.json         # Configurações de componentes (ex: shadcn/ui)
+├── eslint.config.mjs       # Configurações do ESLint
+├── next.config.ts          # Configurações do Next.js
+├── package.json            # Metadados e dependências
+├── package-lock.json       # Trava de versões de dependências
+├── postcss.config.mjs      # Configurações do PostCSS
+├── tsconfig.json           # Configurações do TypeScript
+└── yarn.lock               # Trava de versões (Yarn)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Configuração do Ambiente
 
-To learn more about Next.js, take a look at the following resources:
+### Pré-requisitos
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Node.js instalado (versão recomendada: 16+)
+- Yarn, npm ou pnpm como gerenciador de pacotes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Passos para configurar
 
-## Deploy on Vercel
+1. Clone o repositório:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+git clone https://github.com/viniblack/alume-challenge.git
+cd alume-challenge/frontend
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2. Instale as dependências:
+
+```bash
+yarn install
+# ou npm install
+# ou pnpm install
+```
+
+---
+
+## Instalação
+
+As dependências são gerenciadas pelo Yarn (ou npm/pnpm). Após clonar o repositório, execute:
+
+```bash
+yarn install
+```
+
+---
+
+## Execução do Projeto
+
+Para iniciar o servidor de desenvolvimento:
+
+```bash
+yarn dev
+# ou npm run dev
+# ou pnpm dev
+```
+
+O frontend estará disponível em:
+[http://localhost:3000](http://localhost:3000)
+
+### Para produção
+
+Build:
+
+```bash
+yarn build
+```
+
+Iniciar servidor:
+
+```bash
+yarn start
+```
+
+---
+
+## Rotas Principais
+
+* **`/`** — Página inicial (landing page).
+* **`/login`** — Página para login de usuários.
+* **`/register`** — Registro de novos usuários.
+* **`/dashboard`** — Resumo e controle das simulações financeiras.
+* **`/simulations`** — Criação e visualização das simulações.
+* **`/profile`** — Configurações e informações do perfil do usuário.
+
+---
+
+## Variáveis de Ambiente
+
+Crie um arquivo `.env.local` na raiz do diretório `frontend` com as seguintes variáveis:
+
+```
+NEXT_PUBLIC_API_URL=http://localhost:3001/api
+```
+
+* **`NEXT_PUBLIC_API_URL`**: URL base da API backend para as requisições.

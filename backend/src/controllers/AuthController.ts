@@ -165,13 +165,15 @@ export const refreshToken = async (req: Request, res: Response) => {
     const token = req.cookies.refreshToken;
 
     if (!token) {
-      return res.status(401).json({ error: 'Refresh token não encontrado' });
+      res.status(401).json({ error: 'Refresh token não encontrado' });
+      return;
     }
 
     const decoded = verifyToken(token);
 
     if (!decoded) {
-      return res.status(401).json({ error: 'Refresh token inválido ou expirado' });
+      res.status(401).json({ error: 'Refresh token inválido ou expirado' });
+      return;
     }
 
     const newToken = generateToken({ userId: decoded.userId, email: decoded.email });
@@ -183,7 +185,7 @@ export const refreshToken = async (req: Request, res: Response) => {
       maxAge: 5 * 60 * 1000
     });
 
-    return res.status(200).json({ message: 'Token renovado com sucesso' });
+    res.status(200).json({ message: 'Token renovado com sucesso' });
   } catch (error) {
     console.error('Erro ao renovar token:', error);
     res.status(500).json({ error: 'Erro ao renovar token' });
@@ -234,12 +236,14 @@ export const changePassword = async (req: Request, res: Response) => {
     });
 
     if (!student) {
-      return res.status(404).json({ error: 'Usuário não encontrado' });
+      res.status(404).json({ error: 'Usuário não encontrado' });
+      return
     }
 
     const isValid = await comparePassword(currentPassword, student.password);
     if (!isValid) {
-      return res.status(400).json({ error: 'Senha atual incorreta' });
+      res.status(400).json({ error: 'Senha atual incorreta' });
+      return
     }
 
     const hashedNewPassword = await hashPassword(newPassword);
@@ -249,21 +253,22 @@ export const changePassword = async (req: Request, res: Response) => {
       data: { password: hashedNewPassword }
     });
 
-    return res.status(200).json({ message: 'Senha atualizada com sucesso' });
+    res.status(200).json({ message: 'Senha atualizada com sucesso' });
   } catch (error) {
     console.error('Erro ao atualizar senha:', error);
 
     if (error instanceof z.ZodError) {
-      return res.status(400).json({
+      res.status(400).json({
         error: 'Dados inválidos',
         details: error.errors.map(err => ({
           field: err.path.join('.'),
           message: err.message
         }))
       });
+      return
     }
 
-    return res.status(500).json({
+    res.status(500).json({
       error: 'Erro interno do servidor',
       message: 'Não foi possível atualizar a senha'
     });

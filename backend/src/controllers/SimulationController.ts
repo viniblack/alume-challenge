@@ -153,7 +153,8 @@ export const getSimulationsSummary = async (req: Request, res: Response) => {
     const userId = req.user?.userId;
 
     if (!userId) {
-      return res.status(401).json({ error: 'Usuário não autenticado' });
+      res.status(401).json({ error: 'Usuário não autenticado' });
+      return
     }
 
     const simulations = await prisma.financingSimulation.findMany({
