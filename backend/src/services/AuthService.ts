@@ -55,3 +55,10 @@ export const extractTokenFromHeader = (authHeader?: string): string | null => {
   }
   return authHeader.substring(7)
 }
+
+/**
+ * Atualiza token JWT
+ */
+export const generateRefreshToken = (payload: { userId: string; email: string }): string => {
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
+}

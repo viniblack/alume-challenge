@@ -3,7 +3,8 @@ import { PrismaClient } from '@prisma/client';
 import {
   hashPassword,
   comparePassword,
-  generateToken
+  generateToken,
+  generateRefreshToken
 } from '../services/AuthService';
 import {
   RegisterInput,
@@ -66,6 +67,15 @@ export const registerStudent = async (req: Request, res: Response) => {
       maxAge: 5 * 60 * 1000
     });
 
+    const refreshToken = generateRefreshToken({ userId: student.id, email: student.email });
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 dias
+    });
+
     res.status(201).json({
       message: 'Estudante cadastrado com sucesso',
       student
@@ -120,6 +130,15 @@ export const login = async (req: Request, res: Response) => {
       maxAge: 5 * 60 * 1000
     });
 
+    const refreshToken = generateRefreshToken({ userId: student.id, email: student.email });
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 dias
+    });
+
     res.status(200).json({
       message: 'Login realizado com sucesso',
       student: {
@@ -139,11 +158,50 @@ export const login = async (req: Request, res: Response) => {
 }
 
 /**
+  * POST /api/refresh-token - Atualiza token
+  */
+export const refreshToken = async (req: Request, res: Response) => {
+  try {
+    const token = req.cookies.refreshToken;
+
+    if (!token) {
+      return res.status(401).json({ error: 'Refresh token não encontrado' });
+    }
+
+    const decoded = verifyToken(token);
+
+    if (!decoded) {
+      return res.status(401).json({ error: 'Refresh token inválido ou expirado' });
+    }
+
+    const newToken = generateToken({ userId: decoded.userId, email: decoded.email });
+
+    res.cookie('token', newToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 5 * 60 * 1000
+    });
+
+    return res.status(200).json({ message: 'Token renovado com sucesso' });
+  } catch (error) {
+    console.error('Erro ao renovar token:', error);
+    res.status(500).json({ error: 'Erro ao renovar token' });
+  }
+}
+
+/**
  * POST /api/logout - Logout estudante
  */
 export const logout = (req: Request, res: Response) => {
   try {
     res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
+
+    res.clearCookie('refreshToken', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',

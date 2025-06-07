@@ -56,9 +56,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = async () => {
-    await authAPI.logout();
-    setStudent(null);
-  };
+    try {
+      await authAPI.logout()
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error)
+    } finally {
+      setStudent(null)
+    }
+  }
 
   return (
     <AuthContext.Provider value={{ student, loading, login, register, logout, fetchCurrentStudent }}>

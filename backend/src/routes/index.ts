@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { getProfile, updateProfile } from '../controllers/StudentController';
-import { changePassword, login, logout, registerStudent } from '../controllers/AuthController';
+import { changePassword, login, logout, refreshToken, registerStudent } from '../controllers/AuthController';
 import { createSimulation, getSimulations, getSimulationsSummary, getSimulationsEvolution } from '../controllers/SimulationController';
 import { authMiddleware } from '../middlewares/authMiddleware';
 import {
@@ -29,6 +29,11 @@ router.post('/register', validateSchema(registerSchema), registerStudent);
  * POST /api/login - Autenticação
  */
 router.post('/login', validateSchema(loginSchema), login);
+
+/**
+ * POST /api/refresh-token - Atualiza token
+ */
+router.post('/refresh-token', refreshToken);
 
 /**
  * POST /api/logout - Logout estudante
