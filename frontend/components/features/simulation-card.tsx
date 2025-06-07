@@ -33,23 +33,19 @@ export default function SimulationCard() {
     try {
       setLoading(true)
       const res = await createSimulation(data)
-      toast.success("Simulação criada com sucesso")
-      console.log("Register success", res)
+      toast.success(res.message)
     } catch (error) {
-      console.error(error);
-      toast.error("Erro ao enviar a simulação.")
+      console.error("Erro ao enviar a simulação", error.response?.data?.error || error.message)
+      toast.error(error.response?.data?.error || "Erro ao enviar a simulação")
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <Card className="w-[60vw] h-[70vh] max-w-4xl flex flex-col md:flex-row gap-6 py-0">
-
+    <Card className="w-full max-w-10xl h-auto flex flex-col lg:flex-row gap-6 overflow-y-auto">
       <DialogTitle className="sr-only">Criar simulação</DialogTitle>
-
-
-      <div className="flex-1 space-y-6 p-7">
+      <div className="flex-1 space-y-6 p-4 md:p-7">
         {/* Valor desejado */}
         <div>
           <h2 className="text-md font-bold text-center text-muted-foreground ">Valor desejado</h2>
@@ -121,7 +117,7 @@ export default function SimulationCard() {
         </Button>
       </div>
 
-      <div className="flex-1 flex flex-col justify-between items-center bg-muted rounded-md p-7">
+      <div className="flex-1 flex flex-col justify-between items-center bg-muted rounded-md p-4 md:p-7">
         <div className="flex flex-col justify-center h-100 w-90">
           <h2 className="text-md font-bold text-center text-muted-foreground pb-3">Parcela mensal</h2>
           <div className="text-4xl font-bold mt-2 pb-5 text-center">

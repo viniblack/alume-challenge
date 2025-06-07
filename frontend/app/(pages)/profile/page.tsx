@@ -68,13 +68,12 @@ export default function ProfilePage() {
   const handleSave = async () => {
     try {
       const res = await updateProfile(formData)
-      console.log("Atualização de perfil:", res)
-      toast.success("Perfil atualizado com sucesso.")
+      toast.success(res.message)
       setIsEditing(false)
       fetchCurrentStudent()
     } catch (error) {
-      console.error("Erro ao atualizar perfil:", error)
-      toast.error("Erro ao salvar alterações.")
+      console.error("Erro ao salvar alterações", error.response?.data?.error || error.message)
+      toast.error(error.response?.data?.error || "Erro ao salvar alterações")
     }
   }
 

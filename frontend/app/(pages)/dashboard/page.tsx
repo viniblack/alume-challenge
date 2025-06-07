@@ -6,6 +6,9 @@ import { useEffect, useState, useCallback } from "react";
 import { Simulation } from "@/lib/http/simulationAPI";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import RequireAuth from "@/components/RequireAuth";
+import { DataTable } from "@/components/features/dashboard-table/data-table";
+import { simulationColumns } from "@/components/features/dashboard-table/columns";
+import { toast } from "sonner";
 
 export default function DashboardPage() {
   const [simulations, setSimulations] = useState<Simulation[]>([]);
@@ -23,12 +26,9 @@ export default function DashboardPage() {
       setSimulations(simulationsRes.simulations);
       setSimulationsSummary(summaryRes);
       setSimulationsEvolution(evolutionRes.simulations);
-
-      console.log('Simulations:', simulationsRes.simulations);
-      console.log('Summary:', summaryRes);
-      console.log('Evolution:', evolutionRes.simulations);
     } catch (error) {
-      console.error('Erro ao buscar dados:', error);
+      console.error("Erro ao buscar dados", error.response?.data?.error || error.message)
+      toast.error(error.response?.data?.error || "Erro ao buscar dados")
     }
   }, []);
 
@@ -45,62 +45,50 @@ export default function DashboardPage() {
 
   return (
     <RequireAuth>
-      <div className="grid gap-6 p-6">
-        {/* Resumo das Simulações Recentes */}
-        <Card>
+      {/* grid gap-6 p-4 sm:p-6 max-w-screen-xl mx-auto */}
+      <div className="w-full px-3 md:px-10 pt-5 d-flex">
+        {/* Últimas Simulações */}
+        <Card className="my-5">
           <CardHeader>
-            <CardTitle>Últimas 5 Simulações</CardTitle>
+            <CardTitle className="text-base sm:text-lg md:text-xl">Últimas 5 Simulações</CardTitle>
           </CardHeader>
-          <CardContent>
-            <ul className="space-y-2">
-              {recentSimulations.map(sim => (
-                <li key={sim.id} className="flex justify-between text-sm">
-                  <span>{new Date(sim.createdAt).toLocaleDateString("pt-BR")}</span>
-                  <span>Valor: R$ {sim.totalAmount.toLocaleString("pt-BR")}</span>
-                  <span>Nº Parcelas: {sim.numberOfInstallments}</span>
-                  <span>Parcela: R$ {sim.monthlyInstallment.toLocaleString("pt-BR")}</span>
-                  <span>Juros: {sim.monthlyInterestRate}%</span>
-                  <span>Total: R$ {sim.totalToPay.toLocaleString("pt-BR")}</span>
-                </li>
-              ))}
-            </ul>
+          <CardContent className="overflow-x-auto">
+            <DataTable columns={simulationColumns} data={recentSimulations} />
           </CardContent>
         </Card>
 
-        {/* Totalizadores */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Cards de estatísticas */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <StatCard title="Total de Simulações" value={totalSimulations.toString()} />
           <StatCard title="Valor Médio das Parcelas" value={`R$ ${averageInstallment.toLocaleString("pt-BR")}`} />
         </div>
 
-        {/* Gráfico de Evolução das Simulações */}
-        <Card>
+        {/* Gráfico */}
+        <Card className="my-5">
           <CardHeader>
-            <CardTitle>Evolução das Simulações por Valor</CardTitle>
+            <CardTitle className="text-base sm:text-lg md:text-xl">Evolução das Simulações por Valor</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={simulationsEvolution.slice().reverse()}
-                  margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="createdAt"
-                    tickFormatter={(str) => new Date(str).toLocaleDateString("pt-BR")}
-                  />
-                  <YAxis />
-                  <Tooltip formatter={(value: number) => `R$ ${value.toLocaleString("pt-BR")}`} />
-                  <Line
-                    type="monotone"
-                    dataKey="totalAmount"
-                    stroke="#00dcc0"
-                    activeDot={{ r: 8 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
+          <CardContent className="h-64 sm:h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={simulationsEvolution.slice().reverse()}
+                margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="createdAt"
+                  tickFormatter={(str) => new Date(str).toLocaleDateString("pt-BR")}
+                />
+                <YAxis />
+                <Tooltip formatter={(value: number) => `R$ ${value.toLocaleString("pt-BR")}`} />
+                <Line
+                  type="monotone"
+                  dataKey="totalAmount"
+                  stroke="#00dcc0"
+                  activeDot={{ r: 8 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
       </div>
@@ -111,12 +99,12 @@ export default function DashboardPage() {
 /** Subcomponente para Cards de estatísticas */
 function StatCard({ title, value }: { title: string; value: string }) {
   return (
-    <Card>
+    <Card className="w-full">
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
+        <CardTitle className="text-base sm:text-lg">{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-2xl font-bold">{value}</p>
+        <p className="text-xl sm:text-2xl font-bold break-words">{value}</p>
       </CardContent>
     </Card>
   );

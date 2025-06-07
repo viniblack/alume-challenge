@@ -25,15 +25,11 @@ export function RegisterForm() {
     try {
       setLoading(true)
       const res = await authRegister(data)
-
-      console.log("Register success", res)
-
-      toast.success("Usuário cadastrado com sucesso")
-
+      toast.success(res.message)
       router.push('/dashboard')
-    } catch (err) {
-      console.error("Register error", err)
-      toast.error("Erro ao cadastrar usuário")
+    } catch (error) {
+      console.error("Erro ao cadastrar usuário", error.response?.data?.error || error.message)
+      toast.error(error.response?.data?.error || "Erro ao cadastrar usuário")
     } finally {
       setLoading(false)
     }

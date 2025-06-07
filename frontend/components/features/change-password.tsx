@@ -31,10 +31,10 @@ export default function ChangePassword({ onClose }: ChangePasswordProps) {
       setLoading(true)
       const res = await changePassword(data)
       toast.success(res.message)
-      onClose() // ✅ Fecha o Dialog
-    } catch (err) {
-      console.error("Change Password error", err.response?.data?.error || err.message)
-      toast.error(err.response?.data?.error || "Erro ao mudar a senha")
+      onClose()
+    } catch (error) {
+      console.error("Change Password error", error.response?.data?.error || error.message)
+      toast.error(error.response?.data?.error || "Erro ao mudar a senha")
     } finally {
       setLoading(false)
     }

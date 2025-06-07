@@ -30,11 +30,11 @@ export function LoginForm() {
     try {
       setLoading(true)
       const res = await authLogin(data)
-      console.log("Login success", res)
-      toast.success("Usuário logado com sucesso")
+      toast.success(res.message)
       router.push('/dashboard')
-    } catch (err) {
-      console.error("Login error", err)
+    } catch (error) {
+      console.error("Erro ao fazer o login", error.response?.data?.error || error.message)
+      toast.error(error.response?.data?.error || "Erro ao fazer o login")
     } finally {
       setLoading(false)
     }

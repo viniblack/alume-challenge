@@ -38,8 +38,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   useEffect(() => {
-    fetchCurrentStudent();
-  }, [fetchCurrentStudent]);
+    if (!student) {
+      fetchCurrentStudent();
+    } else {
+      setLoading(false);
+    }
+  }, [fetchCurrentStudent, student]);
 
   const login = async (payload: LoginRequest) => {
     await authLogin(payload);

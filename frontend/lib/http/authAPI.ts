@@ -46,8 +46,8 @@ const authAPI = {
     return res.data;
   },
   getCurrentStudent: async (): Promise<AuthResponse> => {
-    const res = await apiClient.get<AuthResponse>('/api/me');
-    return res.data
+    const res = await apiClient.get("/api/me");
+    return res.data;
   },
   logout: async () => {
     const res = await apiClient.post('/api/logout');
